@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/app_provider.dart';
 
+import 'about_screen.dart';
+
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
@@ -24,14 +26,26 @@ class SettingsScreen extends StatelessWidget {
           ),
           const Divider(),
           ListTile(
-            title: const Text("About Infographica"),
-            subtitle: const Text("Version 1.0.0"),
+            title: const Text("About / Developer"),
+            subtitle: const Text("Made by Priyanshu Patel"),
+            leading: const Icon(Icons.person_outline),
+            trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const AboutScreen()),
+              );
+            },
+          ),
+          ListTile(
+            title: const Text("App Information"),
+            subtitle: const Text("Infographica v1.0.0+1"),
             leading: const Icon(Icons.info_outline),
             onTap: () {
               showAboutDialog(
                 context: context,
                 applicationName: "Infographica",
-                applicationVersion: "1.0.0",
+                applicationVersion: "1.0.0+1",
                 applicationLegalese: "© 2026 Infographica Team",
                 applicationIcon: const FlutterLogo(size: 40),
                 children: [
@@ -50,12 +64,6 @@ class SettingsScreen extends StatelessWidget {
               // Would normally open email or a form
               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Thank you for your interest! Feedback system coming soon.")));
             },
-          ),
-          ListTile(
-            title: const Text("Developer"),
-            subtitle: const Text("Lead Flutter Developer"),
-            leading: const Icon(Icons.code),
-            onTap: () {},
           ),
         ],
       ),

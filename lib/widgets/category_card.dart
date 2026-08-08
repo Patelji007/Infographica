@@ -24,7 +24,7 @@ class CategoryCard extends StatelessWidget {
           children: [
             CircleAvatar(
               radius: 28,
-              backgroundColor: category.color.withOpacity(0.1),
+              backgroundColor: category.color.withValues(alpha: 0.1),
               child: Icon(category.icon, color: category.color, size: 28),
             ),
             const SizedBox(height: 12),

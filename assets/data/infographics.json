@@ -18,57 +18,25 @@
       "name": "Geography",
       "icon": "public",
       "color": "teal",
-      "infographics": [
-        {
-          "id": "geo_001",
-          "title": "World Climate Zones",
-          "category": "Geography",
-          "description": "Understanding the different climate regions across the globe.",
-          "image_url": "https://raw.githubusercontent.com/username/repo/main/assets/geo/climate.jpg"
-        }
-      ]
+      "infographics": []
     },
     {
       "name": "Science",
       "icon": "biotech",
       "color": "green",
-      "infographics": [
-        {
-          "id": "sci_001",
-          "title": "Human DNA Structure",
-          "category": "Science",
-          "description": "The double helix and how genetic information is stored.",
-          "image_url": "https://raw.githubusercontent.com/username/repo/main/assets/sci/dna.jpg"
-        }
-      ]
+      "infographics": []
     },
     {
       "name": "Technology",
       "icon": "settings",
       "color": "indigo",
-      "infographics": [
-        {
-          "id": "tech_001",
-          "title": "How AI Works",
-          "category": "Technology",
-          "description": "Neural networks and machine learning explained simply.",
-          "image_url": "https://raw.githubusercontent.com/username/repo/main/assets/tech/ai.jpg"
-        }
-      ]
+      "infographics": []
     },
     {
       "name": "Environment",
       "icon": "eco",
       "color": "green",
-      "infographics": [
-        {
-          "id": "env_001",
-          "title": "The Water Cycle",
-          "category": "Environment",
-          "description": "Evaporation, condensation, and precipitation cycles.",
-          "image_url": "https://raw.githubusercontent.com/username/repo/main/assets/env/water.jpg"
-        }
-      ]
+      "infographics": []
     },
     {
       "name": "Biology",

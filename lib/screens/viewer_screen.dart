@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:photo_view/photo_view.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import '../models/infographic.dart';
@@ -13,11 +12,7 @@ class ViewerScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        foregroundColor: Colors.white,
         title: Text(infographic.title),
         actions: [
           Consumer<AppProvider>(
@@ -25,55 +20,93 @@ class ViewerScreen extends StatelessWidget {
               final isFav = provider.isFavorite(infographic.id);
               return IconButton(
                 icon: Icon(isFav ? Icons.favorite : Icons.favorite_border),
-                color: isFav ? Colors.red : Colors.white,
+                color: isFav ? Colors.red : null,
                 onPressed: () => provider.toggleFavorite(infographic),
               );
             },
           ),
         ],
       ),
-      body: Stack(
-        children: [
-          PhotoView(
-            imageProvider: infographic.imageUrl.startsWith('http')
-                ? CachedNetworkImageProvider(infographic.imageUrl)
-                : AssetImage(infographic.imageUrl) as ImageProvider,
-            heroAttributes: PhotoViewHeroAttributes(tag: infographic.id),
-            minScale: PhotoViewComputedScale.contained,
-            maxScale: PhotoViewComputedScale.covered * 4.1,
-            backgroundDecoration: const BoxDecoration(color: Colors.black),
-            loadingBuilder: (context, event) => const Center(
-              child: CircularProgressIndicator(color: Colors.white),
-            ),
-          ),
-          Positioned(
-            bottom: 24,
-            left: 24,
-            right: 24,
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.6),
-                borderRadius: BorderRadius.circular(12),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Full Infographic with Zoom support
+            Hero(
+              tag: infographic.id,
+              child: InteractiveViewer(
+                minScale: 1.0,
+                maxScale: 5.0,
+                child: infographic.imageUrl.startsWith('http')
+                    ? CachedNetworkImage(
+                        imageUrl: infographic.imageUrl,
+                        width: double.infinity,
+                        fit: BoxFit.contain,
+                        placeholder: (context, url) => const SizedBox(
+                          height: 300,
+                          child: Center(child: CircularProgressIndicator()),
+                        ),
+                        errorWidget: (context, url, error) => const SizedBox(
+                          height: 300,
+                          child: Center(child: Icon(Icons.broken_image, size: 80)),
+                        ),
+                      )
+                    : Image.asset(
+                        infographic.imageUrl,
+                        width: double.infinity,
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) => const SizedBox(
+                          height: 300,
+                          child: Center(child: Icon(Icons.broken_image, size: 80)),
+                        ),
+                      ),
               ),
+            ),
+            
+            // Metadata Section
+            Padding(
+              padding: const EdgeInsets.all(20.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
-                    infographic.category,
-                    style: const TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold, fontSize: 14),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primaryContainer,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      infographic.category,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onPrimaryContainer,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 16),
+                  Text(
+                    infographic.title,
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                  const SizedBox(height: 12),
+                  const Divider(),
+                  const SizedBox(height: 12),
                   Text(
                     infographic.description,
-                    style: const TextStyle(color: Colors.white, fontSize: 13),
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          height: 1.5,
+                          color: Theme.of(context).textTheme.bodyLarge?.color?.withValues(alpha: 0.8),
+                        ),
                   ),
+                  const SizedBox(height: 40), // Bottom padding
                 ],
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

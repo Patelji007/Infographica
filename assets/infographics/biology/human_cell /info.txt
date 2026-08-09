@@ -1,2 +1,0 @@
-Human Cell
-Deep dive into the complete structure of a human cell 

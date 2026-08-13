@@ -63,3 +63,13 @@ android/build/
 # Generated APKs
 *.apk
 *.aab
+
+# Generated files
+build/
+.gradle/
+.gradle_home/
+.dart_tool/
+android/.gradle/
+android/.gradle_home/
+android/gradle/wrapper/dists/
+**/build/

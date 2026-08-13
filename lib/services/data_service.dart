@@ -11,9 +11,11 @@ class DataService {
   static const String _repoName = "Infographica";
   static const String _branch = "main";
   static const String _basePath = "assets/infographics";
-  
+  static const String _dataStatsPath = "assets/data";
+
   static const String _treeApiUrl = "https://api.github.com/repos/$_repoOwner/$_repoName/git/trees/$_branch?recursive=1";
   static const String _rawBaseUrl = "https://raw.githubusercontent.com/$_repoOwner/$_repoName/$_branch/$_basePath";
+  static const String _rawStatsBaseUrl = "https://raw.githubusercontent.com/$_repoOwner/$_repoName/$_branch/$_dataStatsPath";
 
   static const String _metaCachePrefix = "meta_cache_";
 
@@ -142,6 +144,66 @@ class DataService {
     } catch (e) {
       debugPrint("Discovery error: $e");
       return _fetchLocalFallback();
+    }
+  }
+
+  Future<List<InfographicCategory>> fetchDataStats() async {
+    try {
+      final treeResponse = await http.get(Uri.parse(_treeApiUrl));
+      if (treeResponse.statusCode != 200) return [];
+
+      final treeData = json.decode(treeResponse.body);
+      final List<dynamic> tree = treeData['tree'] ?? [];
+
+      Map<String, List<Infographic>> statsMap = {
+        "india": [],
+        "world": [],
+      };
+
+      for (var node in tree) {
+        final path = node['path'] as String;
+        if (!path.startsWith(_dataStatsPath)) continue;
+
+        final relativePath = path.substring(_dataStatsPath.length + (path == _dataStatsPath ? 0 : 1));
+        if (relativePath.isEmpty) continue;
+
+        final parts = relativePath.split('/');
+        if (parts.length != 2) continue;
+
+        final folder = parts[0].toLowerCase();
+        if (folder != "india" && folder != "world") continue;
+
+        final fileName = parts[1];
+        if (!fileName.toLowerCase().endsWith(".png")) continue;
+
+        final title = fileName.replaceAll(".png", "").replaceAll("_", " ");
+
+        statsMap[folder]!.add(Infographic(
+          id: "stat_${folder}_$fileName",
+          title: title,
+          category: folder == "india" ? "India" : "World",
+          description: "",
+          imageUrl: "$_rawStatsBaseUrl/$folder/$fileName",
+        ));
+      }
+
+      return [
+        InfographicCategory(
+          name: "India",
+          iconName: "public",
+          colorName: "orange",
+          infographics: statsMap["india"]!,
+        ),
+        InfographicCategory(
+          name: "World",
+          iconName: "public",
+          colorName: "blue",
+          infographics: statsMap["world"]!,
+        ),
+      ];
+    } catch (e) {
+      debugPrint("Fetch stats error: $e");
+      return [];
     }
   }
 

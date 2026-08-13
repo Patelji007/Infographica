@@ -5,8 +5,7 @@ plugins {
 
 android {
     namespace = "com.example.infographic_app"
-    compileSdk = 36
-    ndkVersion = "28.2.13676358"
+    compileSdk = 34
     
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
@@ -35,9 +34,4 @@ android {
 
 flutter {
     source = "../.."
-}
-
-
-dependencies {
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
 }

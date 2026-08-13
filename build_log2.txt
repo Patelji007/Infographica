@@ -1,0 +1,2 @@
+Running Gradle task 'assembleRelease'...                            6.0s
+Gradle build failed to produce an .apk file. It's likely that this file was generated under /home/captain/Projects/infographic_app/build, but the tool couldn't find it.

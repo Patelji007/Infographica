@@ -5,6 +5,7 @@ import '../models/infographic.dart';
 class StorageService {
   static const String _favoritesKey = 'favorites_v1';
   static const String _themeKey = 'is_dark_mode';
+  static const String _lastSeenIdKey = 'last_seen_id';
 
   Future<void> saveFavorite(Infographic infographic) async {
     final prefs = await SharedPreferences.getInstance();
@@ -49,5 +50,15 @@ class StorageService {
   Future<bool> getThemeMode() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(_themeKey) ?? false;
+  }
+
+  Future<String?> getLastSeenId() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_lastSeenIdKey);
+  }
+
+  Future<void> setLastSeenId(String id) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_lastSeenIdKey, id);
   }
 }

@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import '../models/infographic.dart';
 import '../providers/app_provider.dart';
 
+import 'full_screen_viewer.dart';
+
 class ViewerScreen extends StatelessWidget {
   final Infographic infographic;
 
@@ -31,12 +33,16 @@ class ViewerScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Full Infographic with Zoom support
-            Hero(
-              tag: infographic.id,
-              child: InteractiveViewer(
-                minScale: 1.0,
-                maxScale: 5.0,
+            // Infographic Preview (Tappable for Full Screen)
+            GestureDetector(
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => FullScreenViewer(infographic: infographic),
+                ),
+              ),
+              child: Hero(
+                tag: infographic.id,
                 child: infographic.imageUrl.startsWith('http')
                     ? CachedNetworkImage(
                         imageUrl: infographic.imageUrl,

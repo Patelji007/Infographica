@@ -15,36 +15,28 @@ import 'package:permission_handler/permission_handler.dart';
 void callbackDispatcher() {
   Workmanager().executeTask((task, inputData) async {
     try {
-      await NotificationService.init();
       final dataService = DataService();
       final storageService = StorageService();
+      
+      // Perform background sync only. No notifications here.
       final categories = await dataService.fetchCategories();
       final all = categories.expand((c) => c.infographics).toList();
       
       if (all.isNotEmpty) {
         final newestId = all.last.id;
-        final lastSeenId = await storageService.getLastSeenId();
-        if (lastSeenId == null) {
-          await storageService.setLastSeenId(newestId);
-          return Future.value(true);
-        }
-        if (lastSeenId != newestId) {
-          await NotificationService.showNotification(
-            id: 99,
-            title: "New Infographic Uploaded!",
-            body: "Check out: ${all.last.title}",
-          );
-          await storageService.setLastSeenId(newestId);
-        }
+        await storageService.setLastSeenId(newestId);
       }
     } catch (e) {
-      debugPrint("Background task error: $e");
+      debugPrint("Background sync error: $e");
     }
     return Future.value(true);
   });
 }
 
+@pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  // If you're going to use other Firebase services in the background, such as Firestore,
+  // make sure you call `initializeApp` before using other Firebase services.
   await Firebase.initializeApp();
   debugPrint("Handling a background message: ${message.messageId}");
 }
@@ -59,6 +51,18 @@ void main() async {
     
     // Subscribe to updates topic
     await FirebaseMessaging.instance.subscribeToTopic('infographica_updates');
+    
+    // Handle foreground messages
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      debugPrint('Got a message whilst in the foreground!');
+      if (message.notification != null) {
+        NotificationService.showNotification(
+          id: message.hashCode,
+          title: message.notification!.title ?? "New Infographic!",
+          body: message.notification!.body ?? "Tap to explore new content.",
+        );
+      }
+    });
   } catch (e) {
     debugPrint("Firebase initialization failed: $e");
   }
@@ -82,7 +86,7 @@ void main() async {
   
   await Workmanager().registerPeriodicTask(
     "1",
-    "checkNewInfographics",
+    "syncInfographics", // Renamed to clarify purpose
     frequency: const Duration(hours: 3),
     existingWorkPolicy: ExistingWorkPolicy.keep,
     constraints: Constraints(networkType: NetworkType.connected),

@@ -3,7 +3,6 @@ import '../models/category.dart';
 import '../models/infographic.dart';
 import '../services/data_service.dart';
 import '../services/storage_service.dart';
-import '../services/notification_service.dart';
 
 class AppProvider with ChangeNotifier {
   final DataService _dataService = DataService();
@@ -23,7 +22,6 @@ class AppProvider with ChangeNotifier {
 
   List<Infographic> get allInfographics {
     final all = _categories.expand((c) => c.infographics).toList();
-    // For now, just reverse to show "latest" (assuming tree order)
     return all.reversed.toList();
   }
 
@@ -45,22 +43,9 @@ class AppProvider with ChangeNotifier {
       _dataStats = await _dataService.fetchDataStats();
       _favorites = await _storageService.getFavorites();
 
-      // Check for new infographics
       final currentAll = allInfographics;
       if (currentAll.isNotEmpty) {
         final newestId = currentAll.first.id;
-        final lastSeenId = await _storageService.getLastSeenId();
-
-        if (lastSeenId != null && lastSeenId != newestId) {
-          // New infographic found!
-          await NotificationService.showNotification(
-            id: 1,
-            title: "New Infographic Available!",
-            body: "Check out: ${currentAll.first.title}",
-          );
-        }
-        
-        // Update last seen ID
         await _storageService.setLastSeenId(newestId);
       }
     } catch (e) {

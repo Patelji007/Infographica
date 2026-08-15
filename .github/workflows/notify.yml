@@ -23,9 +23,7 @@ jobs:
 
       - name: Send FCM Notification
         run: |
-          # Extract project ID from the service account JSON
           PROJECT_ID=$(echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}' | jq -r .project_id)
-          
           ACCESS_TOKEN="${{ steps.auth.outputs.access_token }}"
           
           curl -X POST "https://fcm.googleapis.com/v1/projects/$PROJECT_ID/messages:send" \
@@ -39,8 +37,17 @@ jobs:
                 "body": "Fresh content has been added. Open Infographica to explore!"
               },
               "android": {
+                "priority": "high",
                 "notification": {
+                  "channel_id": "infographic_updates",
                   "click_action": "FLUTTER_NOTIFICATION_CLICK"
+                }
+              },
+              "apns": {
+                "payload": {
+                  "aps": {
+                    "content-available": 1
+                  }
                 }
               }
             }

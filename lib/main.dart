@@ -66,15 +66,14 @@ void main() async {
   await NotificationService.init();
   await Permission.notification.request();
   
-  // Remove the black area at the top
+  // Force True Full Screen / Edge-to-Edge
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
-    statusBarIconBrightness: Brightness.dark, // Adjust based on your theme
+    statusBarIconBrightness: Brightness.dark,
     systemNavigationBarColor: Colors.transparent,
+    systemNavigationBarIconBrightness: Brightness.dark,
   ));
-  
-  // Support for full edge-to-edge
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
   await Workmanager().initialize(
     callbackDispatcher,

@@ -48,130 +48,131 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
         }
 
         final newest = provider.allInfographics.take(5).toList();
+        final statusBarHeight = MediaQuery.of(context).padding.top;
 
         return Scaffold(
-          body: SafeArea(
-            bottom: false,
-            child: RefreshIndicator(
-              onRefresh: () async {
-                await provider.refreshData();
-                _selectRandomFeatured(provider);
-              },
-              child: CustomScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                slivers: [
-                  // 1. Header
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Infographica",
-                                style: Theme.of(context).textTheme.headlineLarge,
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                "Learn visually. Understand deeply.",
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                      color: const Color(0xFF74777F),
-                                    ),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              _buildHeaderAction(Icons.search_rounded, () {
-                                Navigator.push(context, MaterialPageRoute(builder: (_) => const SearchScreen()));
-                              }),
-                              const SizedBox(width: 12),
-                              _buildHeaderAction(Icons.favorite_outline_rounded, () {
-                                Navigator.push(context, MaterialPageRoute(builder: (_) => const FavoritesScreen()));
-                              }),
-                              const SizedBox(width: 12),
-                              _buildHeaderAction(Icons.settings_outlined, () {
-                                Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsScreen()));
-                              }),
-                            ],
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
+          body: RefreshIndicator(
+            onRefresh: () async {
+              await provider.refreshData();
+              _selectRandomFeatured(provider);
+            },
+            child: CustomScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              slivers: [
+                // Top Padding to blend with status bar
+                SliverToBoxAdapter(child: SizedBox(height: statusBarHeight)),
 
-                  // 2. Featured Section
-                  if (_featuredInfographic != null) ...[
-                    const SliverToBoxAdapter(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-                        child: Row(
+                // 1. Header
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Icon(Icons.stars_rounded, color: Color(0xFF673AB7), size: 20),
-                            SizedBox(width: 8),
                             Text(
-                              "Featured",
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF673AB7),
-                              ),
+                              "Infographica",
+                              style: Theme.of(context).textTheme.headlineLarge,
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              "Learn visually. Understand deeply.",
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: const Color(0xFF74777F),
+                                  ),
                             ),
                           ],
                         ),
-                      ),
+                        Row(
+                          children: [
+                            _buildHeaderAction(Icons.search_rounded, () {
+                              Navigator.push(context, MaterialPageRoute(builder: (_) => const SearchScreen()));
+                            }),
+                            const SizedBox(width: 12),
+                            _buildHeaderAction(Icons.favorite_outline_rounded, () {
+                              Navigator.push(context, MaterialPageRoute(builder: (_) => const FavoritesScreen()));
+                            }),
+                            const SizedBox(width: 12),
+                            _buildHeaderAction(Icons.settings_outlined, () {
+                              Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsScreen()));
+                            }),
+                          ],
+                        )
+                      ],
                     ),
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                        child: _buildFeaturedCard(_featuredInfographic!),
-                      ),
-                    ),
-                  ],
+                  ),
+                ),
 
-                  // 3. What's New Section
+                // 2. Featured Section
+                if (_featuredInfographic != null) ...[
                   const SliverToBoxAdapter(
                     child: Padding(
-                      padding: EdgeInsets.fromLTRB(24, 24, 24, 8),
+                      padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
                       child: Row(
                         children: [
-                          Icon(Icons.explore_rounded, color: Color(0xFF1A1C1E), size: 20),
+                          Icon(Icons.stars_rounded, color: Color(0xFF673AB7), size: 20),
                           SizedBox(width: 8),
                           Text(
-                            "What's New",
+                            "Featured",
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
+                              color: Color(0xFF673AB7),
                             ),
                           ),
                         ],
                       ),
                     ),
                   ),
-                  if (newest.isEmpty)
-                    const SliverToBoxAdapter(
-                      child: Padding(
-                        padding: EdgeInsets.all(32.0),
-                        child: Center(child: Text("No infographics available yet.")),
-                      ),
-                    )
-                  else
-                    SliverPadding(
-                      padding: const EdgeInsets.fromLTRB(24, 0, 24, 100), // Added bottom padding for nav bar
-                      sliver: SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                          (context, index) {
-                            return _buildNewItemCard(newest[index]);
-                          },
-                          childCount: newest.length,
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      child: _buildFeaturedCard(_featuredInfographic!),
+                    ),
+                  ),
+                ],
+
+                // 3. What's New Section
+                const SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(24, 24, 24, 8),
+                    child: Row(
+                      children: [
+                        Icon(Icons.explore_rounded, color: Color(0xFF1A1C1E), size: 20),
+                        SizedBox(width: 8),
+                        Text(
+                          "What's New",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
+                      ],
+                    ),
+                  ),
+                ),
+                if (newest.isEmpty)
+                  const SliverToBoxAdapter(
+                    child: Padding(
+                      padding: EdgeInsets.all(32.0),
+                      child: Center(child: Text("No infographics available yet.")),
+                    ),
+                  )
+                else
+                  SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(24, 0, 24, 100),
+                    sliver: SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) {
+                          return _buildNewItemCard(newest[index]);
+                        },
+                        childCount: newest.length,
                       ),
                     ),
-                ],
-              ),
+                  ),
+              ],
             ),
           ),
         );
@@ -201,7 +202,8 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
 
   Widget _buildFeaturedCard(Infographic item) {
     return GestureDetector(
-      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ViewerScreen(infographic: item))),
+      onTap: () => Navigator.push(
+          context, MaterialPageRoute(builder: (_) => ViewerScreen(infographic: item))),
       child: Container(
         height: 240,
         decoration: BoxDecoration(
@@ -224,13 +226,14 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
                     ? CachedNetworkImage(
                         imageUrl: item.imageUrl,
                         fit: BoxFit.cover,
-                        placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
+                        placeholder: (context, url) =>
+                            const Center(child: CircularProgressIndicator()),
                         errorWidget: (context, url, error) => const Icon(Icons.broken_image),
                       )
                     : Image.asset(item.imageUrl, fit: BoxFit.cover),
               ),
-              
-              // Dark Gradient Overlay for Readability
+
+              // Bottom Gradient for Button Contrast
               Positioned.fill(
                 child: Container(
                   decoration: BoxDecoration(
@@ -238,65 +241,72 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: [
-                        Colors.black.withValues(alpha: 0.1),
-                        Colors.black.withValues(alpha: 0.8),
+                        Colors.transparent,
+                        Colors.black.withValues(alpha: 0.6),
                       ],
-                      stops: const [0.3, 1.0],
+                      stops: const [0.6, 1.0],
                     ),
                   ),
                 ),
               ),
-              
-              // Content
-              Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF673AB7),
-                        borderRadius: BorderRadius.circular(10),
+
+              // Category Badge (Top Left)
+              Positioned(
+                top: 20,
+                left: 20,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF673AB7),
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
                       ),
-                      child: Text(
-                        item.category,
-                        style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
-                      ),
+                    ],
+                  ),
+                  child: Text(
+                    item.category,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
                     ),
-                    const SizedBox(height: 12),
-                    Text(
-                      item.title,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
+                  ),
+                ),
+              ),
+
+              // Infographic Name Button (Bottom)
+              Positioned(
+                bottom: 20,
+                left: 20,
+                right: 20,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => ViewerScreen(infographic: item)),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF673AB7),
+                    foregroundColor: Colors.white,
+                    minimumSize: const Size(double.infinity, 50),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                    elevation: 8,
+                    shadowColor: Colors.black,
+                  ),
+                  child: Text(
+                    item.title,
+                    textAlign: TextAlign.center,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 0.5,
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      item.description,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.9),
-                        fontSize: 14,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    ElevatedButton.icon(
-                      onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ViewerScreen(infographic: item))),
-                      icon: const Icon(Icons.menu_book_rounded, size: 18),
-                      label: const Text("View Infographic"),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF673AB7),
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        elevation: 0,
-                      ),
-                    )
-                  ],
+                  ),
                 ),
               ),
             ],

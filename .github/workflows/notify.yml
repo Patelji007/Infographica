@@ -1,0 +1,47 @@
+name: Notify Users
+on:
+  push:
+    paths:
+      - 'assets/infographics/**'
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - id: 'auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v2'
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}'
+
+      - name: Send FCM Notification
+        run: |
+          # Extract project ID from the service account JSON
+          PROJECT_ID=$(echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}' | jq -r .project_id)
+          
+          ACCESS_TOKEN="${{ steps.auth.outputs.access_token }}"
+          
+          curl -X POST "https://fcm.googleapis.com/v1/projects/$PROJECT_ID/messages:send" \
+          -H "Authorization: Bearer $ACCESS_TOKEN" \
+          -H "Content-Type: application/json" \
+          -d '{
+            "message": {
+              "topic": "infographica_updates",
+              "notification": {
+                "title": "New Infographic Available!",
+                "body": "Fresh content has been added. Open Infographica to explore!"
+              },
+              "android": {
+                "notification": {
+                  "click_action": "FLUTTER_NOTIFICATION_CLICK"
+                }
+              }
+            }
+          }'

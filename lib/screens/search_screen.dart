@@ -26,36 +26,60 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: TextField(
-          controller: _controller,
-          autofocus: true,
-          decoration: const InputDecoration(
-            hintText: "Search infographics...",
-            border: InputBorder.none,
+        backgroundColor: Colors.transparent,
+        title: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(15),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 10,
+              ),
+            ],
           ),
-          onChanged: _onSearch,
+          child: TextField(
+            controller: _controller,
+            autofocus: true,
+            decoration: const InputDecoration(
+              hintText: "Search title or category...",
+              border: InputBorder.none,
+              hintStyle: TextStyle(color: Colors.grey, fontSize: 15),
+            ),
+            onChanged: _onSearch,
+          ),
         ),
       ),
       body: _controller.text.isEmpty
-          ? const Center(
+          ? Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.search, size: 80, color: Colors.grey),
-                  SizedBox(height: 16),
-                  Text("Type to search title or category", style: TextStyle(color: Colors.grey)),
+                  Icon(Icons.search_rounded, size: 80, color: Colors.grey[300]),
+                  const SizedBox(height: 16),
+                  Text("Type to start searching", style: TextStyle(color: Colors.grey[600])),
                 ],
               ),
             )
           : _results.isEmpty
-              ? const Center(child: Text("No results found."))
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.sentiment_dissatisfied_rounded, size: 64, color: Colors.grey[300]),
+                      const SizedBox(height: 16),
+                      Text("No results found for \"${_controller.text}\"", style: TextStyle(color: Colors.grey[600])),
+                    ],
+                  ),
+                )
               : GridView.builder(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
                     mainAxisSpacing: 16,
                     crossAxisSpacing: 16,
-                    childAspectRatio: 0.75,
+                    childAspectRatio: 0.8,
                   ),
                   itemCount: _results.length,
                   itemBuilder: (context, index) {

@@ -13,16 +13,17 @@ class DataListScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(category.name),
+        backgroundColor: Colors.transparent,
       ),
       body: category.infographics.isEmpty
           ? const Center(child: Text("No data visuals found yet"))
           : GridView.builder(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 mainAxisSpacing: 16,
                 crossAxisSpacing: 16,
-                childAspectRatio: 0.75,
+                childAspectRatio: 0.8,
               ),
               itemCount: category.infographics.length,
               itemBuilder: (context, index) {

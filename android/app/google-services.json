@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "181552008900",
+    "project_id": "infographica-f379e",
+    "storage_bucket": "infographica-f379e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:181552008900:android:fb7415ab9cfd53d0380391",
+        "android_client_info": {
+          "package_name": "com.example.infographic_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBTj3DeKWAWCqJA2SU5dWSNb_0wjiYlj2Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

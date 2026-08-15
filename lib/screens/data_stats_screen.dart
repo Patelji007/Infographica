@@ -11,67 +11,106 @@ class DataStatsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<AppProvider>(
       builder: (context, provider, child) {
-        if (provider.isLoading) {
-          return const Center(child: CircularProgressIndicator());
-        }
+        final india = provider.dataStats.firstWhere(
+          (c) => c.name.toLowerCase() == "india", 
+          orElse: () => provider.dataStats.isNotEmpty ? provider.dataStats[0] : provider.categories[0]
+        );
+        final world = provider.dataStats.firstWhere(
+          (c) => c.name.toLowerCase() == "world", 
+          orElse: () => provider.dataStats.length > 1 ? provider.dataStats[1] : provider.categories[0]
+        );
 
-        if (provider.dataStats.length < 2) {
-          return const Center(child: Text("Data categories not found. Please check your GitHub assets."));
-        }
-
-        final india = provider.dataStats.firstWhere((c) => c.name.toLowerCase() == "india", orElse: () => provider.dataStats[0]);
-        final world = provider.dataStats.firstWhere((c) => c.name.toLowerCase() == "world", orElse: () => provider.dataStats[1]);
-
-        return RefreshIndicator(
-          onRefresh: provider.refreshData,
-          child: ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 16),
-                child: Text(
-                  "Choose a Region",
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Row(
+        return Scaffold(
+          body: SafeArea(
+            bottom: false,
+            child: RefreshIndicator(
+              onRefresh: provider.refreshData,
+              child: ListView(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
                 children: [
-                  Expanded(
-                    child: CategoryCard(
-                      category: india,
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => DataListScreen(category: india),
+                  const Padding(
+                    padding: EdgeInsets.only(top: 24, bottom: 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Data & Stats",
+                          style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Color(0xFF1A1C1E)),
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          "Global and regional insights.",
+                          style: TextStyle(color: Color(0xFF74777F), fontSize: 16),
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (provider.isLoading)
+                    const Center(child: Padding(
+                      padding: EdgeInsets.all(32.0),
+                      child: CircularProgressIndicator(),
+                    ))
+                  else ...[
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: CategoryCard(
+                            category: india,
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => DataListScreen(category: india),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: CategoryCard(
+                            category: world,
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => DataListScreen(category: world),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 48),
+                    Center(
+                      child: Container(
+                        padding: const EdgeInsets.all(32),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        child: Column(
+                          children: [
+                            Icon(Icons.auto_graph_rounded, size: 64, color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5)),
+                            const SizedBox(height: 24),
+                            const Text(
+                              "Educational Data Visualizations",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                            ),
+                            const SizedBox(height: 12),
+                            const Text(
+                              "Explore structured data and statistics from India and around the world, updated as new research is published.",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: Color(0xFF74777F), fontSize: 14, height: 1.5),
+                            ),
+                          ],
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: CategoryCard(
-                      category: world,
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => DataListScreen(category: world),
-                        ),
-                      ),
-                    ),
-                  ),
+                    const SizedBox(height: 32),
+                  ]
                 ],
               ),
-              const SizedBox(height: 32),
-              const Icon(Icons.insights, size: 80, color: Colors.grey),
-              const SizedBox(height: 16),
-              Text(
-                "Visualized data and statistics. Updated regularly.",
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
-              ),
-            ],
+            ),
           ),
         );
       },
